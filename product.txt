@@ -1,0 +1,49 @@
+function getproducts() {
+    global $con;
+    
+// Ensure you have established a connection to the database before this code block
+$con = new mysqli('localhost','root','','plantdb');
+
+// Check for connection errors
+if ($con->connect_error) {
+    die("Connection failed: " . $con->connect_error);
+}
+
+// Check if the 'category' parameter is set in the URL
+if (!isset($_GET['category'])) {
+    // SQL query to select random products
+    $select_query = "SELECT * FROM `products` ORDER BY RAND() LIMIT 9"; // Changed LIMIT syntax
+    $result_query = mysqli_query($con, $select_query);
+
+    // Check for query execution errors
+    if (!$result_query) {
+        die("Query Error: " . mysqli_error($con)); // Handle potential query error
+    }
+
+    // Fetch and display the products
+    while ($row = mysqli_fetch_assoc($result_query)) {
+        $product_id = $row['product_id'];
+        $product_title = htmlspecialchars($row['product_title'], ENT_QUOTES); // Prevent XSS
+        $product_description = htmlspecialchars($row['product_description'], ENT_QUOTES); // Prevent XSS
+        $product_image1 = htmlspecialchars($row['product_image1'], ENT_QUOTES); // Prevent XSS
+        $product_price = $row['product_price']; // You might want to format this for currency
+        $category_id = $row['category_id']; // Use if needed
+        echo "<div class='col-md-4 mb-2'>
+                <div class='card'>
+                    <img src='./Admin Section/product_images/$product_image1' class='card-img-top' alt='$product_title'>
+                    <div class='card-body'>
+                        <h5 class='card-title'>$product_title</h5>
+                        <p class='card-text'>$product_description</p>
+                        <p class='card-text'>Price : $product_price/-</p>
+                        <a href='index.php?add_to_cart=$product_id' class='btn btn-info'>Add to cart</a>
+                        <a href='product_details.php?product_id=$product_id' class='btn btn-secondary'>View more</a>
+                    </div>
+                </div>
+            </div>";
+        
+    }
+} else {
+    // Redirect to another page if category parameter is set
+    header('Location: /products.php?category=' . urlencode($_GET['category']));
+    exit();
+}

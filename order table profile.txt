@@ -1,0 +1,69 @@
+    <?php
+    $username = $_SESSION['username'];
+    $get_user = "SELECT * FROM `user_table` WHERE user_name='$username'";
+    $result = mysqli_query($con, $get_user);
+    $row_featch = mysqli_fetch_assoc($result);
+    $user_id = $row_featch['user_id'];
+    ?>
+    <h3 class="text-success">All my Orders</h3>
+    <table class="table table-bordered mt-5">
+        <thead>
+            <tr>
+                <th>Sl No</th>
+                <th>Amount Due</th>
+                <th>Total Products</th>
+                <th>Invoice Number</th>
+                <th>Date</th>
+                <th>Complete/Incomplete</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- <tr>
+            <td>1</td>
+            <td>100</td>
+            <td>3</td>
+            <td>1233121</td>
+            <td>45454</td>
+            <td>Complete</td>
+            <td>Confirm</td>
+        </tr> -->
+            <?php
+            $get_order_details = "SELECT * FROM `user_orders` WHERE user_id=$user_id";
+            $result_orders = mysqli_query($con, $get_order_details);
+            $number=1;
+            while ($row_orders = mysqli_fetch_assoc($result_orders)) {
+                $order_id = $row_orders['order_id'];
+                $amount_due = $row_orders['amount_due'];
+                $total_products = $row_orders['total_products'];
+                $invoice_number = $row_orders['invoice_number'];
+                $order_date = $row_orders['order_date'];      
+                $order_status = $row_orders['order_status'];
+                if ($order_status == 'pending') {
+                    $order_status = 'Incomplete';
+                } else {
+                    $order_status = 'Complete';
+                }
+
+                // $order_date = $row_date['order_date'];
+               
+                echo " 
+        <tr>
+            <td>$number</td>
+            <td>$amount_due</td>
+            <td>$total_products</td>
+            <td>$invoice_number</td>
+            <td>$order_date</td>
+            <td>$order_status</td>
+            <td><a href='confirm_payment.php'>Confirm</a></td>
+        </tr>";
+        $number++;
+
+
+            }
+            ?>
+        </tbody>
+        <tbody>
+
+        </tbody>
+    </table>
